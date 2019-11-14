@@ -1,7 +1,10 @@
 const express = require("express");
 const app = express();
-const port = 64735;
+const port = 3000;
 const r = require("rethinkdb");
+var bodyParser = require("body-parser");
+app.use(bodyParser.json()); // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => res.send("Hello World!"));
 
@@ -26,18 +29,22 @@ app.get("/locations", function(req, res) {
   );
 });
 
-app.get("/nearby", function(req, res) {
+app.post("/nearby", function(req, res) {
   var connection = null;
+  // res.sen/d("---");
+  var latitude = req.body.latitude;
+  var longtude = req.body.longtude;
+  var range = req.body.range;
   r.connect(
     { host: "ec2-3-84-250-61.compute-1.amazonaws.com", port: 28015 },
     function(err, conn) {
       if (err) throw err;
       connection = conn;
-      //   res.send(conn);
-      let point = r.point(-122.422876, 37.777128);
+      // res.send(latitude + "---" + longtude);
+      let point = r.point(latitude, longtude);
       r.db("jenride")
         .table("location")
-        .get_nearest(point, { index: "location" })
+        .getNearest(point, { index: "location", max_dist: range })
         .run(connection, function(err, cursor) {
           if (err) throw err;
           cursor.toArray(function(err, result) {
