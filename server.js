@@ -55,8 +55,32 @@ app.get("/locations", function(req, res) {
   );
 });
 
-app.get("/locations/active", function(req, res) {
+function calcTime(offset) {
+  // create Date object for current location
+  var d = new Date();
+
+  var dnd = d.toLocaleString({
+    hour12: true
+  });
+  console.log(dnd);
+  var dnew = Date.parse(dnd);
+
+  // convert to msec
+  // subtract local time zone offset
+  // get UTC time in msec
+  var utc = dnew.getTime() + dnew.getTimezoneOffset() * 60000;
+
+  // create new Date object for different city
+  // using supplied offset
+  var nd = Date.parse(utc + 3600000 * offset)();
+
+  // return time as a string
+  return nd;
+}
+
+app.post("/locations/active", function(req, res) {
   var connection = null;
+  var timest = req.body.timestamp;
   r.connect(
     { host: "ec2-3-84-250-61.compute-1.amazonaws.com", port: 28015 },
     function(err, conn) {
@@ -74,7 +98,8 @@ app.get("/locations/active", function(req, res) {
             // res.json(result);
             for (var i in result) {
               var format = "hh:mm:ss";
-              var date = new Date();
+              var date = Date.parse(timest);
+              var date = new Date(date);
               console.log("=======date " + date);
               // console.log(result[i].timestamp);
               var dataTime = Date.parse(result[i].timestamp);
@@ -181,6 +206,7 @@ app.post("/nearby", function(req, res) {
   var latitude = req.body.latitude;
   var longtude = req.body.longtude;
   var range = req.body.range;
+  var timest = req.body.timestamp;
   r.connect(
     { host: "ec2-3-84-250-61.compute-1.amazonaws.com", port: 28015 },
     function(err, conn) {
@@ -200,7 +226,8 @@ app.post("/nearby", function(req, res) {
             // res.json(result);
             for (var i in result) {
               var format = "hh:mm:ss";
-              var date = new Date();
+              var date = Date.parse(timest);
+              var date = new Date(date);
               console.log(result);
               if (result[i].doc != null) {
                 var timestamp = result[i].doc.timestamp;
