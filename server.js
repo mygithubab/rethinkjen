@@ -133,46 +133,46 @@ app.get("/locations/active", function(req, res) {
   );
 });
 
-app.get("/location", function(req, res) {
-  var connection = null;
-  var start = new Date();
-  var end = start - 5;
-  console.log(
-    "seconds elapsed = " +
-      start.getFullYear() +
-      "," +
-      (start.getMonth() + 1) +
-      "," +
-      start.getDate()
-  );
-  r.connect(
-    { host: "ec2-3-84-250-61.compute-1.amazonaws.com", port: 28015 },
-    function(err, conn) {
-      if (err) throw err;
-      connection = conn;
-      //   res.send(conn);
+// app.get("/location", function(req, res) {
+//   var connection = null;
+//   var start = new Date();
+//   var end = start - 5;
+//   console.log(
+//     "seconds elapsed = " +
+//       start.getFullYear() +
+//       "," +
+//       (start.getMonth() + 1) +
+//       "," +
+//       start.getDate()
+//   );
+//   r.connect(
+//     { host: "ec2-3-84-250-61.compute-1.amazonaws.com", port: 28015 },
+//     function(err, conn) {
+//       if (err) throw err;
+//       connection = conn;
+//       //   res.send(conn);
 
-      r.db("jenride")
-        .table("location")
-        .between(
-          r.time(start.getFullYear(), start.getMonth(), start.getDate(), "Z"),
-          r.time(start.getFullYear(), start.getMonth(), start.getDate(), "Z"),
+//       r.db("jenride")
+//         .table("location")
+//         .between(
+//           r.time(start.getFullYear(), start.getMonth(), start.getDate(), "Z"),
+//           r.time(start.getFullYear(), start.getMonth(), start.getDate(), "Z"),
 
-          {
-            index: "timestamp"
-          }
-        )
-        .orderBy({ index: "timestamp" })
-        .run(connection, function(err, cursor) {
-          if (err) throw err;
-          cursor.toArray(function(err, result) {
-            if (err) throw err;
-            res.json(result);
-          });
-        });
-    }
-  );
-});
+//           {
+//             index: "timestamp"
+//           }
+//         )
+//         .orderBy({ index: "timestamp" })
+//         .run(connection, function(err, cursor) {
+//           if (err) throw err;
+//           cursor.toArray(function(err, result) {
+//             if (err) throw err;
+//             res.json(result);
+//           });
+//         });
+//     }
+//   );
+// });
 
 app.post("/nearby", function(req, res) {
   var connection = null;
@@ -190,11 +190,80 @@ app.post("/nearby", function(req, res) {
       r.db("jenride")
         .table("location")
         .getNearest(point, { index: "location", max_dist: range })
+
         .run(connection, function(err, cursor) {
           if (err) throw err;
           cursor.toArray(function(err, result) {
             if (err) throw err;
-            res.json(result);
+            var activeDrivers = [];
+            // res.json(result);
+            for (var i in result) {
+              var format = "hh:mm:ss";
+              var date = new Date();
+              console.log(result);
+              if (result[i].doc != null) {
+                var timestamp = result[i].doc.timestamp;
+                console.log("-----------" + timestamp);
+                var dataTime = Date.parse(timestamp);
+                var dataTime = new Date(dataTime);
+                // console.log(
+                //   "start" + date.getHours(),
+                //   date.getMinutes(),
+                //   date.getSeconds()
+                // );
+                // console.log("last seen" + dataTime);
+                // var time = moment() gives you current time. no format required.
+                var time = moment(
+                  dataTime.getHours() +
+                    ":" +
+                    dataTime.getMinutes() +
+                    ":" +
+                    dataTime.getSeconds(),
+                  format
+                );
+                var beforeTime = moment(
+                  date.getHours() +
+                    ":" +
+                    (date.getMinutes() - 5) +
+                    ":" +
+                    date.getSeconds(),
+                  format
+                );
+
+                if (date.getMinutes() < 5) {
+                  var minutes = 60 + date.getMinutes() - 5;
+                  var beforeTime = moment(
+                    date.getHours() -
+                      1 +
+                      ":" +
+                      minutes +
+                      ":" +
+                      date.getSeconds(),
+                    format
+                  );
+                }
+                // console.log("before " + beforeTime);
+                afterTime = moment(
+                  date.getHours() +
+                    ":" +
+                    date.getMinutes() +
+                    ":" +
+                    date.getSeconds(),
+                  format
+                );
+
+                if (
+                  time.isBetween(beforeTime, afterTime) &&
+                  result[i].doc.active
+                ) {
+                  console.log("is between");
+                  activeDrivers.push(result[i]);
+                } else {
+                  console.log("is not between");
+                }
+              }
+            }
+            res.json(activeDrivers);
           });
         });
     }
