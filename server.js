@@ -75,6 +75,7 @@ app.get("/locations/active", function(req, res) {
             for (var i in result) {
               var format = "hh:mm:ss";
               var date = new Date();
+              console.log("=======date " + date);
               // console.log(result[i].timestamp);
               var dataTime = Date.parse(result[i].timestamp);
               var dataTime = new Date(dataTime);
