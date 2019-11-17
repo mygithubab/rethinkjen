@@ -2,7 +2,9 @@ const express = require("express");
 const app = express();
 const port = 64735;
 const r = require("rethinkdb");
+var moment = require("moment");
 var bodyParser = require("body-parser");
+moment().format();
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -47,6 +49,84 @@ app.get("/locations", function(req, res) {
           cursor.toArray(function(err, result) {
             if (err) throw err;
             res.json(result);
+          });
+        });
+    }
+  );
+});
+
+app.get("/locations/active", function(req, res) {
+  var connection = null;
+  r.connect(
+    { host: "ec2-3-84-250-61.compute-1.amazonaws.com", port: 28015 },
+    function(err, conn) {
+      if (err) throw err;
+      connection = conn;
+      //   res.send(conn);
+      r.db("jenride")
+        .table("location")
+        .filter(r.row("active").eq(true))
+        .run(connection, function(err, cursor) {
+          if (err) throw err;
+          cursor.toArray(function(err, result) {
+            if (err) throw err;
+            var activeDrivers = [];
+            // res.json(result);
+            for (var i in result) {
+              var format = "hh:mm:ss";
+              var date = new Date();
+              // console.log(result[i].timestamp);
+              var dataTime = Date.parse(result[i].timestamp);
+              var dataTime = new Date(dataTime);
+              // console.log(
+              //   "start" + date.getHours(),
+              //   date.getMinutes(),
+              //   date.getSeconds()
+              // );
+              console.log("last seen" + dataTime);
+              // var time = moment() gives you current time. no format required.
+              var time = moment(
+                dataTime.getHours() +
+                  ":" +
+                  dataTime.getMinutes() +
+                  ":" +
+                  dataTime.getSeconds(),
+                format
+              );
+              var beforeTime = moment(
+                date.getHours() +
+                  ":" +
+                  (date.getMinutes() - 5) +
+                  ":" +
+                  date.getSeconds(),
+                format
+              );
+
+              if (date.getMinutes() < 5) {
+                var minutes = 60 + date.getMinutes() - 5;
+                var beforeTime = moment(
+                  date.getHours() - 1 + ":" + minutes + ":" + date.getSeconds(),
+                  format
+                );
+              }
+              // console.log("before " + beforeTime);
+              afterTime = moment(
+                date.getHours() +
+                  ":" +
+                  date.getMinutes() +
+                  ":" +
+                  date.getSeconds(),
+                format
+              );
+
+              if (time.isBetween(beforeTime, afterTime)) {
+                console.log("is between");
+                activeDrivers.push(result[i]);
+              } else {
+                console.log("is not between");
+              }
+            }
+            res.json(activeDrivers);
           });
         });
     }
