@@ -115,6 +115,7 @@ app.post("/locations/active", function(req, res) {
                 dataTime.getHours() +
                   ":" +
                   dataTime.getMinutes() +
+                  5 +
                   ":" +
                   dataTime.getSeconds(),
                 format
@@ -203,10 +204,12 @@ app.post("/locations/active", function(req, res) {
 app.post("/nearby", function(req, res) {
   var connection = null;
   // res.sen/d("---");
+  console.log("=========" + new Date());
   var latitude = req.body.latitude;
   var longtude = req.body.longtude;
   var range = req.body.range;
   var timest = req.body.timestamp;
+  console.log("=========" + new Date());
   r.connect(
     { host: "ec2-3-84-250-61.compute-1.amazonaws.com", port: 28015 },
     function(err, conn) {
