@@ -144,7 +144,8 @@ app.post("/locations/active", function(req, res) {
                   date.getSeconds(),
                 format
               );
-
+              console.log("before -- " + beforeTime);
+              console.log("after -- " + aftertime);
               if (time.isBetween(beforeTime, afterTime)) {
                 console.log("is between");
                 activeDrivers.push(result[i]);
