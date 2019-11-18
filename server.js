@@ -139,7 +139,7 @@ app.post("/locations/active", function(req, res) {
               afterTime = moment(
                 date.getHours() +
                   ":" +
-                  (date.getMinutes() + 5) +
+                  date.getMinutes() +
                   ":" +
                   date.getSeconds(),
                 format
