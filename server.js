@@ -243,16 +243,19 @@ app.post("/nearby", function(req, res) {
               var date = new Date(date);
               console.log(result);
               if (result[i].doc != null) {
-                var timestamp = result[i].doc.timestamp;
-                console.log("-----------" + timestamp);
-                var dataTime = Date.parse(timestamp);
+                var format = "hh:mm:ss";
+                var date = Date.parse(timest);
+                var date = new Date(date);
+                console.log("=======date " + date);
+                // console.log(result[i].timestamp);
+                var dataTime = Date.parse(result[i].doc.timestamp);
                 var dataTime = new Date(dataTime);
                 // console.log(
                 //   "start" + date.getHours(),
                 //   date.getMinutes(),
                 //   date.getSeconds()
                 // );
-                // console.log("last seen" + dataTime);
+                console.log("last seen" + dataTime);
                 // var time = moment() gives you current time. no format required.
                 var time = moment(
                   dataTime.getHours() +
@@ -271,9 +274,26 @@ app.post("/nearby", function(req, res) {
                   format
                 );
 
+                var afterTime = new moment(
+                  date.getHours() +
+                    ":" +
+                    (date.getMinutes() + 5) +
+                    ":" +
+                    date.getSeconds(),
+                  format
+                );
+
+                if (date.getMinutes() > 55) {
+                  var minutes = 60 + date.getMinutes() - 5;
+                  var afterTime = new moment(
+                    date.getHours() + 1 + ":" + 0 + ":" + date.getSeconds(),
+                    format
+                  );
+                }
+
                 if (date.getMinutes() < 5) {
                   var minutes = 60 + date.getMinutes() - 5;
-                  var beforeTime = moment(
+                  var beforeTime = new moment(
                     date.getHours() -
                       1 +
                       ":" +
@@ -284,19 +304,10 @@ app.post("/nearby", function(req, res) {
                   );
                 }
                 // console.log("before " + beforeTime);
-                afterTime = moment(
-                  date.getHours() +
-                    ":" +
-                    date.getMinutes() +
-                    ":" +
-                    date.getSeconds(),
-                  format
-                );
 
-                if (
-                  time.isBetween(beforeTime, afterTime) &&
-                  result[i].doc.active
-                ) {
+                console.log("before -- " + Date.parse(beforeTime));
+                console.log("after -- " + Date.parse(beforeTime));
+                if (time.isBetween(beforeTime, afterTime)) {
                   console.log("is between");
                   activeDrivers.push(result[i]);
                 } else {
