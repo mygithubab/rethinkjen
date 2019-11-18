@@ -97,60 +97,67 @@ app.post("/locations/active", function(req, res) {
             var activeDrivers = [];
             // res.json(result);
             for (var i in result) {
-              var format = "hh:mm:ss";
-              var date = Date.parse(timest);
-              var date = new Date(date);
-              console.log("=======date " + date);
-              // console.log(result[i].timestamp);
-              var dataTime = Date.parse(result[i].timestamp);
-              var dataTime = new Date(dataTime);
-              // console.log(
-              //   "start" + date.getHours(),
-              //   date.getMinutes(),
-              //   date.getSeconds()
-              // );
-              console.log("last seen" + dataTime);
-              // var time = moment() gives you current time. no format required.
-              var time = moment(
-                dataTime.getHours() +
-                  ":" +
-                  dataTime.getMinutes() +
-                  5 +
-                  ":" +
-                  dataTime.getSeconds(),
-                format
-              );
-              var beforeTime = moment(
-                date.getHours() +
-                  ":" +
-                  (date.getMinutes() - 5) +
-                  ":" +
-                  date.getSeconds(),
-                format
-              );
-
-              if (date.getMinutes() < 5) {
-                var minutes = 60 + date.getMinutes() - 5;
-                var beforeTime = moment(
-                  date.getHours() - 1 + ":" + minutes + ":" + date.getSeconds(),
+              if (i.id == "+251932118929") {
+                var format = "hh:mm:ss";
+                var date = Date.parse(timest);
+                var date = new Date(date);
+                console.log("=======date " + date);
+                // console.log(result[i].timestamp);
+                var dataTime = Date.parse(result[i].timestamp);
+                var dataTime = new Date(dataTime);
+                // console.log(
+                //   "start" + date.getHours(),
+                //   date.getMinutes(),
+                //   date.getSeconds()
+                // );
+                console.log("last seen" + dataTime);
+                // var time = moment() gives you current time. no format required.
+                var time = moment(
+                  dataTime.getHours() +
+                    ":" +
+                    dataTime.getMinutes() +
+                    5 +
+                    ":" +
+                    dataTime.getSeconds(),
                   format
                 );
-              }
-              // console.log("before " + beforeTime);
-              afterTime = moment(
-                date.getHours() +
-                  ":" +
-                  date.getMinutes() +
-                  ":" +
-                  date.getSeconds(),
-                format
-              );
+                var beforeTime = moment(
+                  date.getHours() +
+                    ":" +
+                    (date.getMinutes() - 5) +
+                    ":" +
+                    date.getSeconds(),
+                  format
+                );
 
-              if (time.isBetween(beforeTime, afterTime)) {
-                console.log("is between");
-                activeDrivers.push(result[i]);
-              } else {
-                console.log("is not between");
+                if (date.getMinutes() < 5) {
+                  var minutes = 60 + date.getMinutes() - 5;
+                  var beforeTime = moment(
+                    date.getHours() -
+                      1 +
+                      ":" +
+                      minutes +
+                      ":" +
+                      date.getSeconds(),
+                    format
+                  );
+                }
+                // console.log("before " + beforeTime);
+                afterTime = moment(
+                  date.getHours() +
+                    ":" +
+                    date.getMinutes() +
+                    ":" +
+                    date.getSeconds(),
+                  format
+                );
+
+                if (time.isBetween(beforeTime, afterTime)) {
+                  console.log("is between");
+                  activeDrivers.push(result[i]);
+                } else {
+                  console.log("is not between");
+                }
               }
             }
             res.json(activeDrivers);
