@@ -120,21 +120,21 @@ app.post("/locations/active", function(req, res) {
                 format
               );
               var beforeTime = moment(
-                date.getHours() +
-                  ":" +
-                  (date.getMinutes() - 5) +
-                  ":" +
-                  date.getSeconds(),
-                format
-              );
-              var afterTime = new moment(
-                date.getHours() +
-                  ":" +
-                  (date.getMinutes() + 5) +
-                  ":" +
-                  date.getSeconds(),
-                format
-              );
+                  date.getHours() +
+                    ":" +
+                    (date.getMinutes() - 5) +
+                    ":" +
+                    date.getSeconds(),
+                  format
+                ),
+                afterTime = new moment(
+                  date.getHours() +
+                    ":" +
+                    (date.getMinutes() + 5) +
+                    ":" +
+                    date.getSeconds(),
+                  format
+                );
 
               if (date.getMinutes() < 5) {
                 var minutes = 60 + date.getMinutes() - 5;
