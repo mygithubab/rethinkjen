@@ -137,6 +137,14 @@ app.post("/locations/active", function(req, res) {
                 format
               );
 
+              if (date.getMinutes() > 55) {
+                var minutes = 60 + date.getMinutes() - 5;
+                var afterTime = new moment(
+                  date.getHours() + 1 + ":" + 0 + ":" + date.getSeconds(),
+                  format
+                );
+              }
+
               if (date.getMinutes() < 5) {
                 var minutes = 60 + date.getMinutes() - 5;
                 var beforeTime = new moment(
