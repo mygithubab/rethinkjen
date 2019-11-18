@@ -120,21 +120,22 @@ app.post("/locations/active", function(req, res) {
                 format
               );
               var beforeTime = moment(
-                  date.getHours() +
-                    ":" +
-                    (date.getMinutes() - 5) +
-                    ":" +
-                    date.getSeconds(),
-                  format
-                ),
-                afterTime = new moment(
-                  date.getHours() +
-                    ":" +
-                    (date.getMinutes() + 5) +
-                    ":" +
-                    date.getSeconds(),
-                  format
-                );
+                date.getHours() +
+                  ":" +
+                  (date.getMinutes() - 5) +
+                  ":" +
+                  date.getSeconds(),
+                format
+              );
+
+              var afterTime = new moment(
+                date.getHours() +
+                  ":" +
+                  (date.getMinutes() + 5) +
+                  ":" +
+                  date.getSeconds(),
+                format
+              );
 
               if (date.getMinutes() < 5) {
                 var minutes = 60 + date.getMinutes() - 5;
@@ -146,7 +147,7 @@ app.post("/locations/active", function(req, res) {
               // console.log("before " + beforeTime);
 
               console.log("before -- " + beforeTime);
-              console.log("after -- " + aftertime);
+              console.log("after -- " + afterTime);
               if (time.isBetween(beforeTime, afterTime)) {
                 console.log("is between");
                 activeDrivers.push(result[i]);
