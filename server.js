@@ -136,7 +136,7 @@ app.post("/locations/active", function(req, res) {
                 );
               }
               // console.log("before " + beforeTime);
-              afterTime = moment(
+              var afterTime = moment(
                 date.getHours() +
                   ":" +
                   date.getMinutes() +
