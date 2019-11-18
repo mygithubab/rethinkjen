@@ -127,7 +127,7 @@ app.post("/locations/active", function(req, res) {
                   date.getSeconds(),
                 format
               );
-              var afterTime = moment(
+              var afterTime = new moment(
                 date.getHours() +
                   ":" +
                   (date.getMinutes() + 5) +
@@ -138,7 +138,7 @@ app.post("/locations/active", function(req, res) {
 
               if (date.getMinutes() < 5) {
                 var minutes = 60 + date.getMinutes() - 5;
-                var beforeTime = moment(
+                var beforeTime = new moment(
                   date.getHours() - 1 + ":" + minutes + ":" + date.getSeconds(),
                   format
                 );
